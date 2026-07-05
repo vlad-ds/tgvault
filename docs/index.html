@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>tgvault — your Telegram messages, working for you</title>
+<meta name="description" content="tgvault saves your Telegram messages into a private database on your own computer, so your AI assistant can summarize, search, and draft replies. Free and open source.">
+<style>
+  :root {
+    --ink: #1a1a2e;
+    --ink-soft: #4a4a68;
+    --paper: #fdfcf9;
+    --accent: #2563eb;
+    --accent-dark: #1d4ed8;
+    --card: #ffffff;
+    --line: #e8e6e0;
+    --code-bg: #16161f;
+    --code-ink: #e8e8f0;
+    --good: #16a34a;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    background: var(--paper);
+    color: var(--ink);
+    line-height: 1.65;
+    font-size: 19px;
+  }
+  .wrap { max-width: 720px; margin: 0 auto; padding: 0 24px; }
+  header { padding: 72px 0 56px; text-align: center; }
+  .logo { font-size: 56px; line-height: 1; }
+  h1 {
+    font-size: clamp(38px, 7vw, 56px);
+    line-height: 1.12;
+    letter-spacing: -0.02em;
+    margin: 20px 0 18px;
+  }
+  .tagline {
+    font-size: clamp(20px, 3.5vw, 24px);
+    color: var(--ink-soft);
+    max-width: 560px;
+    margin: 0 auto 32px;
+  }
+  .badges { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-bottom: 8px; }
+  .badge {
+    font-size: 15px; font-weight: 600;
+    padding: 6px 14px; border-radius: 999px;
+    background: #eef4ff; color: var(--accent-dark);
+    border: 1px solid #d6e4ff;
+  }
+  .badge.green { background: #edfbf1; color: var(--good); border-color: #d3f2dd; }
+  section { padding: 44px 0; border-top: 1px solid var(--line); }
+  h2 {
+    font-size: clamp(28px, 5vw, 36px);
+    letter-spacing: -0.015em;
+    line-height: 1.2;
+    margin-bottom: 20px;
+  }
+  h3 { font-size: 22px; margin: 28px 0 10px; }
+  p { margin-bottom: 16px; }
+  p.big { font-size: 21px; }
+  a { color: var(--accent); }
+  .cards { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 28px; }
+  @media (max-width: 620px) { .cards { grid-template-columns: 1fr; } }
+  .card {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 22px;
+  }
+  .card .emoji { font-size: 28px; }
+  .card b { display: block; font-size: 18px; margin: 8px 0 6px; }
+  .card p { font-size: 16.5px; color: var(--ink-soft); margin: 0; }
+  ol.steps { list-style: none; counter-reset: step; margin: 24px 0; }
+  ol.steps > li {
+    counter-increment: step;
+    position: relative;
+    padding: 0 0 26px 58px;
+  }
+  ol.steps > li::before {
+    content: counter(step);
+    position: absolute; left: 0; top: 2px;
+    width: 38px; height: 38px;
+    background: var(--ink); color: #fff;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 18px;
+  }
+  ol.steps b { font-size: 20px; }
+  ol.steps p { margin: 6px 0 0; color: var(--ink-soft); font-size: 17.5px; }
+  pre {
+    background: var(--code-bg);
+    color: var(--code-ink);
+    border-radius: 12px;
+    padding: 18px 18px;
+    font-size: 15px;
+    line-height: 1.6;
+    overflow-x: auto;
+    margin: 14px 0;
+    position: relative;
+  }
+  code { font-family: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, monospace; }
+  p code, li code {
+    background: #efede7; color: var(--ink);
+    padding: 2px 7px; border-radius: 6px; font-size: 0.85em;
+    white-space: nowrap;
+  }
+  .copybtn {
+    position: absolute; top: 10px; right: 10px;
+    background: #ffffff18; color: #cfd2e8;
+    border: 1px solid #ffffff2e;
+    border-radius: 8px;
+    font-size: 13px; font-weight: 600;
+    padding: 6px 12px; cursor: pointer;
+  }
+  .copybtn:hover { background: #ffffff30; }
+  .oslabel {
+    display: inline-block;
+    font-size: 14px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em;
+    color: var(--ink-soft); margin: 18px 0 2px;
+  }
+  .promptbox {
+    background: var(--code-bg);
+    border-radius: 14px;
+    padding: 22px;
+    margin: 18px 0;
+    position: relative;
+  }
+  .promptbox pre {
+    background: none; padding: 0; margin: 0;
+    white-space: pre-wrap; word-wrap: break-word;
+    font-size: 14.5px; max-height: 340px; overflow-y: auto;
+  }
+  .note {
+    background: #fff8e6;
+    border: 1px solid #f3e3ae;
+    border-radius: 12px;
+    padding: 16px 20px;
+    font-size: 17px;
+    margin: 20px 0;
+  }
+  .cta {
+    display: inline-block;
+    background: var(--accent); color: #fff;
+    text-decoration: none;
+    font-weight: 700; font-size: 18px;
+    padding: 14px 28px; border-radius: 12px;
+    margin-top: 8px;
+  }
+  .cta:hover { background: var(--accent-dark); }
+  footer {
+    border-top: 1px solid var(--line);
+    padding: 44px 0 64px;
+    text-align: center;
+    color: var(--ink-soft);
+    font-size: 17px;
+  }
+  @media (max-width: 480px) {
+    body { font-size: 17.5px; }
+    header { padding: 48px 0 40px; }
+    section { padding: 36px 0; }
+    ol.steps > li { padding-left: 50px; }
+    ol.steps > li::before { width: 34px; height: 34px; font-size: 16px; }
+  }
+</style>
+</head>
+<body>
+
+<header class="wrap">
+  <div class="logo">🗄️</div>
+  <h1>Your Telegram messages,<br>working for you.</h1>
+  <p class="tagline">tgvault saves your Telegram chats into a private database <em>on your own computer</em> — so your AI assistant can catch you up, find things, and draft replies.</p>
+  <div class="badges">
+    <span class="badge green">Free &amp; open source</span>
+    <span class="badge">Your data never leaves your computer</span>
+  </div>
+  <a class="cta" href="#install">Install in 2 minutes ↓</a>
+</header>
+
+<section class="wrap" id="what">
+  <h2>What it does</h2>
+  <p class="big">Telegram is where your life happens — family groups, friends, plans, addresses, that one photo of the WiFi password. But it's a terrible place to <em>find</em> anything, and no AI assistant can see it.</p>
+  <p class="big">tgvault fixes that. It connects to your Telegram account the same way the Telegram Desktop app does, and keeps a copy of the chats <b>you choose</b> in a private archive on your computer. Then any AI assistant you already use (like Claude) can work with it:</p>
+  <div class="cards">
+    <div class="card"><span class="emoji">📥</span><b>Catch me up</b><p>"Summarize what happened in my group chats this week."</p></div>
+    <div class="card"><span class="emoji">🔎</span><b>Find anything</b><p>"When is the dinner on Friday? Find the address Maria sent."</p></div>
+    <div class="card"><span class="emoji">✍️</span><b>Draft replies</b><p>Your AI writes a draft. Nothing is ever sent until <em>you</em> approve it.</p></div>
+    <div class="card"><span class="emoji">🗓️</span><b>Daily digests</b><p>It remembers what it already summarized, so digests never repeat.</p></div>
+  </div>
+</section>
+
+<section class="wrap" id="security">
+  <h2>Why it's safe</h2>
+  <ol class="steps">
+    <li><b>Your data stays on your computer.</b>
+      <p>Messages are saved to a single folder on your machine. There is no server, no cloud, no account with us, no analytics. The only thing tgvault ever talks to is Telegram itself.</p></li>
+    <li><b>The code is public.</b>
+      <p>Every line is on <a href="https://github.com/vlad-ds/tgvault">GitHub</a> for anyone to inspect. Don't trust us — ask your AI to read the code and audit it before you use it. Seriously, that's a normal thing to do now.</p></li>
+    <li><b>Only the chats you choose.</b>
+      <p>Nothing is downloaded unless you explicitly add a chat to your watch list.</p></li>
+    <li><b>AI can read, but only you can send.</b>
+      <p>Your assistant can prepare draft replies, but the send command only works for a human at the keyboard: it shows you the message and makes you type <code>SEND</code>. It refuses to run for an AI.</p></li>
+    <li><b>You can leave any time.</b>
+      <p>Run <code>tgvault logout</code> and delete one folder. Gone. Your Telegram account is untouched — tgvault never deletes or changes anything there.</p></li>
+  </ol>
+</section>
+
+<section class="wrap" id="install">
+  <h2>How to install</h2>
+  <p>Open a terminal and paste one line. No technical knowledge needed — the installer sets up everything.</p>
+
+  <span class="oslabel">Windows — open “PowerShell” from the Start menu, paste, press Enter</span>
+  <pre><button class="copybtn" onclick="copy(this)">Copy</button><code>irm https://raw.githubusercontent.com/vlad-ds/tgvault/main/install.ps1 | iex</code></pre>
+
+  <span class="oslabel">Mac — open “Terminal”, paste, press Enter</span>
+  <pre><button class="copybtn" onclick="copy(this)">Copy</button><code>curl -fsSL https://raw.githubusercontent.com/vlad-ds/tgvault/main/install.sh | bash</code></pre>
+
+  <h3>Then connect your Telegram</h3>
+  <ol class="steps">
+    <li><b>Open a new terminal window and run <code>tgvault login</code></b>
+      <p>A QR code appears right in the terminal.</p></li>
+    <li><b>Scan it with your phone</b>
+      <p>In Telegram: <b>Settings → Devices → Link Desktop Device</b>. It's exactly like logging into Telegram on a new computer — because that's what it is.</p></li>
+    <li><b>Choose which chats to archive</b>
+      <p>Run <code>tgvault chats</code> to see your chats, then e.g. <code>tgvault watch "Family"</code> for each one you want.</p></li>
+    <li><b>Download your messages</b>
+      <p>Run <code>tgvault sync</code>. Run it again any time to fetch what's new — it's fast and never duplicates anything.</p></li>
+  </ol>
+</section>
+
+<section class="wrap" id="ai">
+  <h2>Connect your AI</h2>
+  <p class="big">tgvault is just the vault. <b>You bring the brain.</b></p>
+  <p>Use any AI assistant that can run commands on your computer — for example <a href="https://claude.com/claude-code">Claude Code</a> or the Claude desktop app. Then either point it at this page and say <em>"set yourself up to use my tgvault"</em>, or copy this prompt and paste it into your assistant:</p>
+
+  <div class="promptbox">
+    <button class="copybtn" onclick="copy(this)">Copy prompt</button>
+    <pre id="prompt">You have access to my Telegram message archive, created by tgvault (https://github.com/vlad-ds/tgvault). It is a local SQLite database at ~/.tgvault/vault.sqlite3 (on Windows: %USERPROFILE%\.tgvault\vault.sqlite3), managed with the `tgvault` command-line tool.
+
+Rules you must always follow:
+1. NEVER send a message. You may create drafts with `tgvault outbox draft <chat> "<text>"`. Only I can send them. Do not attempt `tgvault outbox send` — it is human-only and will refuse you.
+2. This is my private data. Never copy message contents into anything that leaves this computer.
+3. Never modify the messages or chats tables, and never read ~/.tgvault/telegram.session or config.json.
+
+How to work with the vault:
+- `tgvault status --json` — check setup and message counts
+- `tgvault sync --json` — fetch new messages (safe to run any time)
+- `tgvault chats --no-refresh --json` — list my chats
+- `tgvault read "<chat>" --limit 100 --json` — read one chat (also --since YYYY-MM-DD)
+- `tgvault search "<words>" --json` — full-text search across all chats
+- For complex questions, run read-only SQL against the database: tables are chats(chat_id, title, username, kind, monitored), messages(chat_id, message_id, sent_at, sender_id, sender_name, is_outgoing, text, media_type, reply_to_id). is_outgoing=1 means I sent it. Dates are ISO UTC.
+- For recurring jobs (like a daily digest), track your progress with `tgvault processed pending --namespace <job-name>` and `tgvault processed mark --namespace <job-name> --chat <id> --ids 1,2,3` so you never process the same message twice.
+
+Start by running `tgvault status --json` to confirm everything works.</pre>
+  </div>
+
+  <div class="note">
+    <b>Choose your AI carefully.</b> Whatever assistant you connect will be able to read your archived messages — that's the point, but it means you should only use an AI application you genuinely trust, from a company you trust, running on your own computer. If you trust it with your files, you can trust it with this.
+  </div>
+</section>
+
+<section class="wrap" id="contact">
+  <h2>Questions or problems?</h2>
+  <p class="big">tgvault is free, open source (MIT), and made by <a href="https://github.com/vlad-ds">Vlad Gheorghe</a>.</p>
+  <p>Found a bug or need help? <a href="https://github.com/vlad-ds/tgvault/issues">Open an issue on GitHub</a> or write to <a href="mailto:vlad.proex@gmail.com">vlad.proex@gmail.com</a>.</p>
+</section>
+
+<footer>
+  <div class="wrap">
+    🗄️ tgvault · <a href="https://github.com/vlad-ds/tgvault">Source code</a> · MIT License · No cloud. No tracking. Just your messages, on your machine.
+  </div>
+</footer>
+
+<script>
+function copy(btn) {
+  const pre = btn.parentElement.querySelector("code, pre#prompt") || btn.nextElementSibling;
+  navigator.clipboard.writeText(pre.innerText).then(() => {
+    const old = btn.textContent;
+    btn.textContent = "Copied!";
+    setTimeout(() => (btn.textContent = old), 1600);
+  });
+}
+</script>
+
+</body>
+</html>
