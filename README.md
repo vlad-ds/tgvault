@@ -2,6 +2,8 @@
 
 **Your Telegram messages, in a local database your AI can work with.**
 
+**Website (start here if you're not technical): https://vlad-ds.github.io/tgvault/**
+
 tgvault logs into *your* Telegram account (the same way Telegram Desktop does),
 downloads messages from chats you explicitly choose, and stores them in a
 SQLite database on your computer. Any AI assistant (Claude, ChatGPT with a
