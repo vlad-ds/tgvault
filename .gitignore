@@ -1,0 +1,12 @@
+__pycache__/
+*.pyc
+.venv/
+.pytest_cache/
+dist/
+*.egg-info/
+.DS_Store
+# never commit credentials or sessions
+src/tgvault/bundled_credentials.json
+*.session
+*.sqlite3
+.env
