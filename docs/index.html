@@ -232,28 +232,21 @@
 <section class="wrap" id="ai">
   <h2>Connect your AI</h2>
   <p class="big">tgvault is just the vault. <b>You bring the brain.</b></p>
-  <p>Use any AI assistant that can run commands on your computer — for example <a href="https://claude.com/claude-code">Claude Code</a> or the Claude desktop app. Then either point it at this page and say <em>"set yourself up to use my tgvault"</em>, or copy this prompt and paste it into your assistant:</p>
+  <p>Use any AI assistant that can run commands on your computer — for example <a href="https://claude.com/claude-code">Claude Code</a> or the Claude desktop app. tgvault ships with a <a href="https://github.com/vlad-ds/tgvault/blob/main/skill/SKILL.md">skill</a> — a public instruction file that teaches your AI everything: how to read the vault, how to search it, and the rules it must follow (like <em>never send messages</em>).</p>
+  <p>Getting your AI set up is one paste. Copy this into your assistant:</p>
 
   <div class="promptbox">
     <button class="copybtn" onclick="copy(this)">Copy prompt</button>
-    <pre id="prompt">You have access to my Telegram message archive, created by tgvault (https://github.com/vlad-ds/tgvault). It is a local SQLite database at ~/.tgvault/vault.sqlite3 (on Windows: %USERPROFILE%\.tgvault\vault.sqlite3), managed with the `tgvault` command-line tool.
+    <pre id="prompt">Set yourself up to work with my local Telegram archive (created by tgvault, https://vlad-ds.github.io/tgvault/):
 
-Rules you must always follow:
-1. NEVER send a message. You may create drafts with `tgvault outbox draft <chat> "<text>"`. Only I can send them. Do not attempt `tgvault outbox send` — it is human-only and will refuse you.
-2. This is my private data. Never copy message contents into anything that leaves this computer.
-3. Never modify the messages or chats tables, and never read ~/.tgvault/telegram.session or config.json.
-
-How to work with the vault:
-- `tgvault status --json` — check setup and message counts
-- `tgvault sync --json` — fetch new messages (safe to run any time)
-- `tgvault chats --no-refresh --json` — list my chats
-- `tgvault read "<chat>" --limit 100 --json` — read one chat (also --since YYYY-MM-DD)
-- `tgvault search "<words>" --json` — full-text search across all chats
-- For complex questions, run read-only SQL against the database: tables are chats(chat_id, title, username, kind, monitored), messages(chat_id, message_id, sent_at, sender_id, sender_name, is_outgoing, text, media_type, reply_to_id). is_outgoing=1 means I sent it. Dates are ISO UTC.
-- For recurring jobs (like a daily digest), track your progress with `tgvault processed pending --namespace <job-name>` and `tgvault processed mark --namespace <job-name> --chat <id> --ids 1,2,3` so you never process the same message twice.
-
-Start by running `tgvault status --json` to confirm everything works.</pre>
+1. Fetch the tgvault skill from:
+   https://raw.githubusercontent.com/vlad-ds/tgvault/main/skill/SKILL.md
+2. Install it so you'll remember it in future sessions. If you are Claude Code, save it to ~/.claude/skills/tgvault/SKILL.md (any OS). If you have a different skill/memory mechanism, use that. If you have none, save the file somewhere permanent and re-read it whenever I ask about my Telegram.
+3. Read the skill and follow its rules exactly — especially: you may DRAFT messages for me, but you must never send anything.
+4. Verify the setup by running `tgvault status --json` and tell me what you find.</pre>
   </div>
+
+  <p>Other ways to do the same thing: tell your assistant <em>"read https://vlad-ds.github.io/tgvault/ and set yourself up"</em> — this page is enough for it to figure the rest out. Or download <a href="https://raw.githubusercontent.com/vlad-ds/tgvault/main/skill/SKILL.md">SKILL.md</a> yourself and drop it into your assistant's skills folder (for Claude Code that's <code>~/.claude/skills/tgvault/SKILL.md</code>). The skill is plain Markdown — any AI can read it.</p>
 
   <div class="note">
     <b>Choose your AI carefully.</b> Whatever assistant you connect will be able to read your archived messages — that's the point, but it means you should only use an AI application you genuinely trust, from a company you trust, running on your own computer. If you trust it with your files, you can trust it with this.

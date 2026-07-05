@@ -2,6 +2,11 @@
 
 **Your Telegram messages, in a local database your AI can work with.**
 
+[![CI](https://github.com/vlad-ds/tgvault/actions/workflows/ci.yml/badge.svg)](https://github.com/vlad-ds/tgvault/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-blue)
+![Platforms](https://img.shields.io/badge/platforms-macOS%20%7C%20Linux%20%7C%20Windows-lightgrey)
+
 **Website (start here if you're not technical): https://vlad-ds.github.io/tgvault/**
 
 tgvault logs into *your* Telegram account (the same way Telegram Desktop does),
