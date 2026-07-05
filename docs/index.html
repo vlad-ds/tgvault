@@ -89,48 +89,46 @@
   }
   ol.steps b { font-size: 20px; }
   ol.steps p { margin: 6px 0 0; color: var(--ink-soft); font-size: 17.5px; }
-  pre {
-    background: var(--code-bg);
-    color: var(--code-ink);
-    border-radius: 12px;
-    padding: 18px 18px;
-    font-size: 15px;
-    line-height: 1.6;
-    overflow-x: auto;
-    margin: 14px 0;
-    position: relative;
-  }
   code { font-family: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, monospace; }
   p code, li code {
     background: #efede7; color: var(--ink);
     padding: 2px 7px; border-radius: 6px; font-size: 0.85em;
-    white-space: nowrap;
+  }
+  .codecard {
+    background: var(--code-bg);
+    border-radius: 12px;
+    margin: 16px 0 26px;
+    overflow: hidden;
+  }
+  .codecard-top {
+    display: flex; justify-content: space-between; align-items: center;
+    gap: 12px;
+    padding: 10px 12px 10px 16px;
+    border-bottom: 1px solid #ffffff1c;
+  }
+  .codecard-top span {
+    color: #a8abc4;
+    font-size: 13.5px; font-weight: 600;
+    letter-spacing: 0.02em;
   }
   .copybtn {
-    position: absolute; top: 10px; right: 10px;
-    background: #ffffff18; color: #cfd2e8;
+    flex-shrink: 0;
+    background: #ffffff18; color: #e2e4f2;
     border: 1px solid #ffffff2e;
     border-radius: 8px;
     font-size: 13px; font-weight: 600;
-    padding: 6px 12px; cursor: pointer;
+    padding: 6px 14px; cursor: pointer;
   }
   .copybtn:hover { background: #ffffff30; }
-  .oslabel {
-    display: inline-block;
-    font-size: 14px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em;
-    color: var(--ink-soft); margin: 18px 0 2px;
+  .codecard pre {
+    margin: 0; padding: 16px 18px;
+    color: var(--code-ink);
+    font-size: 15px; line-height: 1.6;
+    overflow-x: auto;
   }
-  .promptbox {
-    background: var(--code-bg);
-    border-radius: 14px;
-    padding: 22px;
-    margin: 18px 0;
-    position: relative;
-  }
-  .promptbox pre {
-    background: none; padding: 0; margin: 0;
-    white-space: pre-wrap; word-wrap: break-word;
-    font-size: 14.5px; max-height: 340px; overflow-y: auto;
+  .codecard pre.wrapped {
+    white-space: pre-wrap; overflow-wrap: break-word;
+    font-size: 14.5px;
   }
   .note {
     background: #fff8e6;
@@ -210,11 +208,21 @@
   <h2>How to install</h2>
   <p>Open a terminal and paste one line. No technical knowledge needed — the installer sets up everything.</p>
 
-  <span class="oslabel">Windows — open “PowerShell” from the Start menu, paste, press Enter</span>
-  <pre><button class="copybtn" onclick="copy(this)">Copy</button><code>irm https://raw.githubusercontent.com/vlad-ds/tgvault/main/install.ps1 | iex</code></pre>
+  <div class="codecard">
+    <div class="codecard-top">
+      <span>Windows — open “PowerShell” from the Start menu</span>
+      <button class="copybtn" onclick="copy(this)">Copy</button>
+    </div>
+    <pre><code>irm https://raw.githubusercontent.com/vlad-ds/tgvault/main/install.ps1 | iex</code></pre>
+  </div>
 
-  <span class="oslabel">Mac — open “Terminal”, paste, press Enter</span>
-  <pre><button class="copybtn" onclick="copy(this)">Copy</button><code>curl -fsSL https://raw.githubusercontent.com/vlad-ds/tgvault/main/install.sh | bash</code></pre>
+  <div class="codecard">
+    <div class="codecard-top">
+      <span>Mac — open “Terminal”</span>
+      <button class="copybtn" onclick="copy(this)">Copy</button>
+    </div>
+    <pre><code>curl -fsSL https://raw.githubusercontent.com/vlad-ds/tgvault/main/install.sh | bash</code></pre>
+  </div>
 
   <h3>Then connect your Telegram</h3>
   <ol class="steps">
@@ -232,17 +240,20 @@
 <section class="wrap" id="ai">
   <h2>Connect your AI</h2>
   <p class="big">tgvault is just the vault. <b>You bring the brain.</b></p>
-  <p>Use any AI assistant that can run commands on your computer — for example <a href="https://claude.com/claude-code">Claude Code</a> or the Claude desktop app. tgvault ships with a <a href="https://github.com/vlad-ds/tgvault/blob/main/skill/SKILL.md">skill</a> — a public instruction file that teaches your AI everything: how to read the vault, how to search it, and the rules it must follow (like <em>never send messages</em>).</p>
+  <p>Use any AI assistant that can run commands on your computer — for example <a href="https://claude.com/claude-code">Claude Code</a>, the Claude desktop app, or OpenAI's <a href="https://openai.com/codex/">Codex</a>. tgvault ships with a <a href="https://github.com/vlad-ds/tgvault/blob/main/skill/SKILL.md">skill</a> — a public instruction file that teaches your AI everything: how to read the vault, how to search it, how to keep its own record of which messages it has already handled, and the rules it must follow (like <em>never send messages</em>).</p>
   <p>Getting your AI set up is one paste. Copy this into your assistant:</p>
 
-  <div class="promptbox">
-    <button class="copybtn" onclick="copy(this)">Copy prompt</button>
-    <pre id="prompt">Set yourself up to work with my local Telegram archive (created by tgvault, https://vlad-ds.github.io/tgvault/):
+  <div class="codecard">
+    <div class="codecard-top">
+      <span>Prompt for your AI assistant</span>
+      <button class="copybtn" onclick="copy(this)">Copy prompt</button>
+    </div>
+    <pre class="wrapped" id="prompt">Set yourself up to work with my local Telegram archive (created by tgvault, https://vlad-ds.github.io/tgvault/):
 
 1. Fetch the tgvault skill from:
    https://raw.githubusercontent.com/vlad-ds/tgvault/main/skill/SKILL.md
-2. Install it so you'll remember it in future sessions. If you are Claude Code, save it to ~/.claude/skills/tgvault/SKILL.md (any OS). If you have a different skill/memory mechanism, use that. If you have none, save the file somewhere permanent and re-read it whenever I ask about my Telegram.
-3. Read the skill and follow its rules exactly — especially: you may DRAFT messages for me, but you must never send anything.
+2. Install it so you'll remember it in future sessions. If you are Claude Code, save it to ~/.claude/skills/tgvault/SKILL.md (any OS). If you are Codex or another assistant with a different skill/memory mechanism, use that. If you have none, save the file somewhere permanent and re-read it whenever I ask about my Telegram.
+3. Read the skill and follow its rules exactly. The two big ones: you may DRAFT messages for me but must never send anything, and you keep your own record of which messages you've already handled (`tgvault processed pending` / `tgvault processed mark`) so you never re-process old ones.
 4. Verify the setup by running `tgvault status --json` and tell me what you find.</pre>
   </div>
 
@@ -267,7 +278,7 @@
 
 <script>
 function copy(btn) {
-  const pre = btn.parentElement.querySelector("code, pre#prompt") || btn.nextElementSibling;
+  const pre = btn.closest(".codecard").querySelector("pre");
   navigator.clipboard.writeText(pre.innerText).then(() => {
     const old = btn.textContent;
     btn.textContent = "Copied!";

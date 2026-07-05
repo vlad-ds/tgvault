@@ -302,24 +302,40 @@ def search(
 
 @processed_app.command("mark")
 def processed_mark(
-    namespace: str = typer.Option(..., help="Workflow name, e.g. daily-digest"),
-    chat: str = typer.Option(..., help="Chat ref"),
-    ids: str = typer.Option(..., help="Comma-separated message ids"),
+    namespace: str = typer.Option(
+        "agent", help="Read-registry name. Default 'agent'; use one per workflow."
+    ),
+    chat: str = typer.Option(None, help="Chat ref (required with --ids)"),
+    ids: str = typer.Option(None, help="Comma-separated message ids"),
+    all_pending: bool = typer.Option(
+        False, "--all", help="Mark everything currently unread (optionally one --chat)"
+    ),
     note: str = typer.Option(None),
 ):
-    """Mark messages as processed by a workflow (idempotent)."""
+    """Mark messages as read/processed by an AI workflow (idempotent).
+
+    This is the agent's own read registry — completely independent of
+    Telegram's read receipts, which tgvault never touches.
+    """
     conn = _conn()
-    chat_row = _resolve_chat(conn, chat)
-    id_list = [int(i) for i in ids.split(",") if i.strip()]
-    count = dbmod.mark_processed(
-        conn, namespace, [(chat_row["chat_id"], i) for i in id_list], note=note
-    )
+    if all_pending:
+        chat_id = _resolve_chat(conn, chat)["chat_id"] if chat else None
+        count = dbmod.mark_all_unprocessed(conn, namespace, chat_id=chat_id, note=note)
+    elif chat and ids:
+        chat_row = _resolve_chat(conn, chat)
+        id_list = [int(i) for i in ids.split(",") if i.strip()]
+        count = dbmod.mark_processed(
+            conn, namespace, [(chat_row["chat_id"], i) for i in id_list], note=note
+        )
+    else:
+        err_console.print("[red]Provide --chat and --ids, or use --all.[/red]")
+        raise typer.Exit(1)
     console.print(f"Marked {count} message(s) in namespace '{namespace}'.")
 
 
 @processed_app.command("pending")
 def processed_pending(
-    namespace: str = typer.Option(...),
+    namespace: str = typer.Option("agent"),
     chat: str = typer.Option(None),
     limit: int = typer.Option(100),
     as_json: bool = typer.Option(True, "--json/--no-json"),

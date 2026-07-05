@@ -96,6 +96,23 @@ def test_processed_tracking(conn):
     assert len(db.unprocessed(conn, "other-workflow")) == 5
 
 
+def test_mark_all_unprocessed(conn):
+    db.upsert_chat(conn, CHAT)
+    chat2 = dict(CHAT, chat_id=2, title="Bob", username="bob")
+    db.upsert_chat(conn, chat2)
+    db.ingest_messages(conn, 1, [make_msg(i) for i in range(1, 4)])
+    db.ingest_messages(conn, 2, [make_msg(1), make_msg(2)])
+
+    db.mark_processed(conn, "agent", [(1, 1)])
+    # Scoped to chat 1: marks its remaining two, leaves chat 2 alone.
+    assert db.mark_all_unprocessed(conn, "agent", chat_id=1) == 2
+    assert len(db.unprocessed(conn, "agent")) == 2
+    # Unscoped: catches the rest; second run is a no-op.
+    assert db.mark_all_unprocessed(conn, "agent") == 2
+    assert db.mark_all_unprocessed(conn, "agent") == 0
+    assert db.unprocessed(conn, "agent") == []
+
+
 def test_outbox_flow(conn):
     db.upsert_chat(conn, CHAT)
     draft_id = db.create_draft(conn, 1, "Sounds good, see you then!", "agent")

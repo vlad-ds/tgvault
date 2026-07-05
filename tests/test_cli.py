@@ -74,6 +74,42 @@ def test_read_and_search_cli(tmp_path, monkeypatch):
     assert '"message_id": 1' in result.output
 
 
+def test_processed_default_namespace_and_all(tmp_path, monkeypatch):
+    conn = _vault(tmp_path, monkeypatch)
+    db.ingest_messages(
+        conn,
+        1,
+        [
+            {
+                "message_id": i,
+                "sent_at": f"2026-07-0{i}T10:00:00+00:00",
+                "sender_id": 111,
+                "sender_name": "Alice",
+                "is_outgoing": False,
+                "text": f"msg {i}",
+                "media_type": None,
+                "reply_to_id": None,
+            }
+            for i in (1, 2, 3)
+        ],
+    )
+    result = runner.invoke(app, ["processed", "pending"])
+    assert result.exit_code == 0
+    assert result.output.count('"message_id"') == 3
+
+    result = runner.invoke(app, ["processed", "mark", "--chat", "alice", "--ids", "1"])
+    assert result.exit_code == 0 and "Marked 1" in result.output
+
+    result = runner.invoke(app, ["processed", "mark", "--all"])
+    assert result.exit_code == 0 and "Marked 2" in result.output
+
+    result = runner.invoke(app, ["processed", "mark"])  # neither --ids nor --all
+    assert result.exit_code == 1
+
+    result = runner.invoke(app, ["processed", "pending"])
+    assert '"message_id"' not in result.output
+
+
 def test_ambiguous_and_missing_chat_refs(tmp_path, monkeypatch):
     conn = _vault(tmp_path, monkeypatch)
     db.upsert_chat(

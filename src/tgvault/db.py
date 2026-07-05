@@ -265,6 +265,31 @@ def mark_processed(
     return cur.rowcount
 
 
+def mark_all_unprocessed(
+    conn: sqlite3.Connection,
+    namespace: str,
+    chat_id: int | None = None,
+    note: str | None = None,
+) -> int:
+    """Mark every currently-unprocessed message in the namespace as processed."""
+    ts = now_iso()
+    sql = """
+        INSERT OR IGNORE INTO processed (namespace, chat_id, message_id, processed_at, note)
+        SELECT ?, m.chat_id, m.message_id, ?, ?
+        FROM messages m
+        LEFT JOIN processed p
+            ON p.namespace = ? AND p.chat_id = m.chat_id AND p.message_id = m.message_id
+        WHERE p.message_id IS NULL
+    """
+    params: list = [namespace, ts, note, namespace]
+    if chat_id is not None:
+        sql += " AND m.chat_id = ?"
+        params.append(chat_id)
+    with conn:
+        cur = conn.execute(sql, params)
+    return cur.rowcount
+
+
 def unprocessed(
     conn: sqlite3.Connection, namespace: str, chat_id: int | None = None, limit: int = 100
 ) -> list[sqlite3.Row]:

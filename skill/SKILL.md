@@ -63,21 +63,32 @@ text, media_type, reply_to_id)`, `messages_fts(text, chat_id, message_id)`
 
 `is_outgoing = 1` means the user sent it; `sent_at` is ISO-8601 UTC.
 
-## Recurring workflows: processed tracking
+## Your read registry: processed tracking
 
-If you run a recurring job (daily digest, todo extraction, ...), use a stable
-namespace so you never re-process messages:
+You have your own registry of which messages you have already read and
+handled. It is completely independent of Telegram's read receipts — tgvault
+never touches those, and a message being "read on Telegram" tells you nothing
+about whether *you* processed it. Always use this registry via the CLI (not
+raw SQL) so marking stays idempotent.
+
+The core loop:
 
 ```bash
-tgvault processed pending --namespace daily-digest --limit 200   # JSON out
-# ... do your work on those messages ...
-tgvault processed mark --namespace daily-digest --chat 12345 \
-  --ids 101,102,103 --note "digest 2026-07-05"
+tgvault processed pending --limit 200        # messages you haven't read yet (JSON)
+# ... read them, do your work ...
+tgvault processed mark --all                 # "I'm caught up on everything"
+# or, selectively:
+tgvault processed mark --chat 12345 --ids 101,102,103 --note "summarized"
+tgvault processed mark --all --chat "Family" # caught up on one chat only
 ```
 
-`pending` returns stored messages not yet marked in that namespace, oldest
-first. Marking is idempotent. Namespaces are independent — pick one per
-workflow and reuse it every run.
+`pending` returns stored messages you haven't marked, oldest first. Marking
+is idempotent — re-marking is harmless.
+
+The default registry namespace is `agent`. If you run several distinct
+recurring workflows (say a daily digest and a todo extractor), give each its
+own `--namespace daily-digest` etc. on both `pending` and `mark`, so they
+track independently.
 
 ## Drafting replies (human sends, not you)
 
