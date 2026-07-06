@@ -211,7 +211,16 @@
   }
   .codecard pre.wrapped { white-space: pre-wrap; overflow-wrap: break-word; font-size: 14px; }
 
-  /* ---------- note ---------- */
+  /* ---------- callouts ---------- */
+  .tip {
+    background: var(--green-tint);
+    border: 1px solid var(--green-line);
+    border-radius: 14px;
+    padding: 18px 22px;
+    font-size: 16.5px;
+    margin: 4px 0 24px;
+  }
+  .tip b { color: var(--green); }
   .note {
     background: #fdf6e3;
     border: 1px solid #f0e2b6;
@@ -305,7 +314,10 @@
 <section class="wrap" id="install">
   <div class="kicker">Get started</div>
   <h2>How to install</h2>
-  <p>Open a terminal and paste one line. The installer sets up everything — no technical knowledge needed.</p>
+  <div class="tip">
+    <b>The lazy way:</b> if you already use an AI assistant on your computer (like Claude or Codex), just send it this page's link and say <em>“install tgvault for me”</em> — it can handle everything below, and you only step in to scan the QR code.
+  </div>
+  <p>Prefer to do it yourself? Open a terminal and paste one line. The installer sets up everything — no technical knowledge needed.</p>
 
   <div class="codecard">
     <div class="codecard-top">
